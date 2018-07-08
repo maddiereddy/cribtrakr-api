@@ -22,3 +22,6 @@ yarn-error.log*
 
 .netlify
 .vscode/settings.json
+
+# dotenv environment variables file
+.env
