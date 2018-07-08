@@ -1,4 +1,11 @@
 language: node_js
- node_js: node
- services:
-     - mongodb
+node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: GgRkd/tZZVMpbdhpO5QxW782smMjLOeNVfZsoy4c9VKyRNN+xzgGr7zQKbm9aE3dlFfhTtmGVJzaPkVHw2bA5N/YoBHbtLQexFrOrE3TpKMDH4x+MsUcramx5/JBYQ0AAy49C4BmN5xyZcVEqbMmmjN/RfrT65UkSc4tKnaJncoENcx7l6IsZNJYSlCjx/uhxERFjuMLax+C4VnX7ig0744eX8zEVRz+AZRxPDQmZ1jbBn4rPFO3ZUcl2IKzaMidmCIlrCM6v9o+HlX4fBomunAMywwcYOKon0EIszCH0VxJnTCEETbF90QVyim8rd7tFYd38klH3SHnpUq89JY+UL3zz/viKWFhJis+/y68Tq2+0L0gg5wieNO9eVeqtoj1whRB9lfR3nxyNgNeh95EqFzqSU7tPI5IR8HEL1liXLR5Ww7xtXFOocRUfq+3vYG0VFQJU/9GSdil+S7BuZeGdbLjLkKa3UMYKNHf+6dOlPAw6wUrlJEOwMUz2omFrv/wHr38WXj/sOKVktHGwOy4h8TOtl9WsDD1Oex/3wl+0eJPR3UDWO7jT4mL6bQIVYzs3llSMgqmo0PgBlbN3D4wRqvMIHkf9nGmrvNbxEoYajiO/b6onC1DsoG/fpbHRTlEeSTEMsukKKr7T1BBT8umxQRUb/1pw/N0Cxi2sGq2zFk=
+  app: evening-oasis-38989
+  on:
+    repo: maddiereddy/cribtrakr-api
