@@ -56,6 +56,14 @@ router.post('/', jsonParser, (req, res) => {
 
   // check if new property already on the user's list; if not, the create entry
   let {user, street, city, state, zip} = req.body;
+  let mortgage = 0, 
+      pmi = 0, 
+      propertyTax = 0, 
+      insurance = 0, 
+      hoa = 0, 
+      managementFees = 0, 
+      misc = 0;
+
   return Rental.find({user, street, zip})
     .count()
     .then(count => {
@@ -66,7 +74,7 @@ router.post('/', jsonParser, (req, res) => {
           message: 'New property already created.',
         });
       }
-    return {user, street, city, state, zip};
+    return {user, street, city, state, zip, mortgage, pmi, insurance, propertyTax, hoa, managementFees, misc};
   }).then(newItem => {
     return Rental.create(newItem);
   }).then( created => {
@@ -113,18 +121,20 @@ router.put('/:id', jsonParser, (req, res) => {
     });
 });
 
-// delete item by id
-router.delete('/:id', jsonParser, (req, res) => {
-
-  Rental
-    .findByIdAndRemove(req.params.id)
-    .then(() => {
-      res.status(204).json({ message: 'success' });
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ message: 'Internal server error: DELETE' });
-    });
-});
+// Do we actually need to remove a property? Maybe just retire it if you sell it,
+// In that way you can keep the expenses on it
+// // delete item by id
+// router.delete('/:id', jsonParser, (req, res) => {
+  
+//   Rental
+//     .findByIdAndRemove(req.params.id)
+//     .then(() => {
+//       res.status(204).json({ message: 'success' });
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ message: 'Internal server error: DELETE' });
+//     });
+// });
 
 module.exports = {router};
