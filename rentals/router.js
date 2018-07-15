@@ -1,6 +1,7 @@
 'use strict';
 
 const { Rental } = require('./models');
+const { Expense } = require('../expenses/models');
 const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
@@ -123,18 +124,25 @@ router.put('/:id', jsonParser, (req, res) => {
 
 // Do we actually need to remove a property? Maybe just retire it if you sell it,
 // In that way you can keep the expenses on it
-// // delete item by id
-// router.delete('/:id', jsonParser, (req, res) => {
-  
-//   Rental
-//     .findByIdAndRemove(req.params.id)
-//     .then(() => {
-//       res.status(204).json({ message: 'success' });
-//     })
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ message: 'Internal server error: DELETE' });
-//     });
-// });
+// delete item by id
+router.delete('/:id', jsonParser, (req, res) => {
+  Expense
+    .remove({propId: req.params.id})
+    .then(() => {
+      Rental
+        .findByIdAndRemove(req.params.id)
+        .then(() => {
+          res.status(204).json({ message: 'success' });
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(500).json({ message: 'Internal server error: DELETE rental property' });
+        })
+      })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error: DELETE all expense on rental property' });
+    });
+});
 
 module.exports = {router};
