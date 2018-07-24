@@ -20,7 +20,7 @@ expenseSchema.methods.serialize = function() {
     id: this._id,
     propId: this.propId,
     category: this.category,
-    amount: "$" + this.amount.toFixed(2),
+    amount: "$" + (this.amount/100).toFixed(2),
     vendor: this.vendor,
     description: this.description,
     date: this.date,

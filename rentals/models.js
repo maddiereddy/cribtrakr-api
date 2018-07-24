@@ -34,13 +34,13 @@ rentalSchema.methods.serialize = function() {
     zip: this.zip,
     status: this.status,
     imageURL: this.imageURL,
-    mortgage: this.mortgage,
-    pmi: this.pmi,
-    insurance: this.insurance,
-    propertyTax: this.propertyTax,
-    hoa: this.hoa,
-    managementFees: this.managementFees,
-    misc: this.misc
+    mortgage:  "$" + (this.mortgage/100).toFixed(2),
+    pmi:  "$" + (this.pmi/100).toFixed(2),
+    insurance:  "$" + (this.insurance/100).toFixed(2),
+    propertyTax:  "$" + (this.propertyTax/100).toFixed(2),
+    hoa:  "$" + (this.hoa/100).toFixed(2),
+    managementFees:  "$" + (this.managementFees/100).toFixed(2),
+    misc:  "$" + (this.misc/100).toFixed(2)
   };
 };
 
