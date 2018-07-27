@@ -12,7 +12,7 @@ const rentalSchema = mongoose.Schema({
   state:  {type: String, required: true},
   zip: {type: String, required: true},
   status: {type: String, default: 'active'},
-  imageURL: {type: Buffer},
+  imageURL: {type: String},
   mortgage: {type: Currency, default: 0},
   pmi: {type: Currency, default: 0},
   insurance: {type: Currency, default: 0},
