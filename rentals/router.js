@@ -56,14 +56,7 @@ router.post('/', jsonParser, (req, res) => {
   }
 
   // check if new property already on the user's list; if not, the create entry
-  let {user, street, city, state, zip} = req.body;
-  let mortgage = 0, 
-      pmi = 0, 
-      propertyTax = 0, 
-      insurance = 0, 
-      hoa = 0, 
-      managementFees = 0, 
-      misc = 0;
+  let {user, street, city, state, zip, imageURL, mortgage, pmi, propertyTax, insurance, hoa, managementFees, misc} = req.body;
 
   return Rental.find({user, street, zip})
     .count()
@@ -75,7 +68,7 @@ router.post('/', jsonParser, (req, res) => {
           message: 'New property already created.',
         });
       }
-    return {user, street, city, state, zip, mortgage, pmi, insurance, propertyTax, hoa, managementFees, misc};
+    return {user, street, city, state, zip, imageURL, mortgage, pmi, insurance, propertyTax, hoa, managementFees, misc};
   }).then(newItem => {
     return Rental.create(newItem);
   }).then( created => {

@@ -6,7 +6,9 @@ var Currency = mongoose.Types.Currency;
 mongoose.Promise = global.Promise;
 
 const expenseSchema = mongoose.Schema({
+  user: {type: String, required: true},
   propId: {type: String, required: true},
+  propName: {type: String, required: true},
   category: {type: String, required: true},
   amount:   {type: Currency, required: true},
   vendor:   {type: String, required: true},
@@ -18,7 +20,9 @@ const expenseSchema = mongoose.Schema({
 expenseSchema.methods.serialize = function() {
   return {
     id: this._id,
+    user: this.user,
     propId: this.propId,
+    propName: this.propName,
     category: this.category,
     amount: "$" + (this.amount/100).toFixed(2),
     vendor: this.vendor,
