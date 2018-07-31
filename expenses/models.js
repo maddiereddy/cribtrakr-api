@@ -1,4 +1,5 @@
 'use strict';
+const moment = require('moment');
 
 const mongoose = require('mongoose');
 require('mongoose-currency').loadType(mongoose);
@@ -13,7 +14,7 @@ const expenseSchema = mongoose.Schema({
   amount:   {type: Currency, required: true},
   vendor:   {type: String, required: true},
   description:  {type: String, required: true},
-  date: {type: Date, required: true},
+  date: {type: String, required: true},
   imageURL: {type: [Buffer]}
 });
 
@@ -27,7 +28,7 @@ expenseSchema.methods.serialize = function() {
     amount: "$" + (this.amount/100).toFixed(2),
     vendor: this.vendor,
     description: this.description,
-    date: this.date,
+    date: moment(this.date).format("YYYY-MM-DD"),
     imageURL: this.imageURL
   };
 };
