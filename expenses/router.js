@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 });
 
 // GET endpoint for a user's rental property expenses
-router.get('/:propId', (req, res) => {
+router.get('/prop/:propId', (req, res) => {
   Expense
     .find({propId: req.params.propId}) 
     .then(expenses => {
@@ -36,60 +36,55 @@ router.get('/:propId', (req, res) => {
 });
 
 // GET endpoint for a user's rental property particular expense
-router.get('/:propId/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   Expense
     .findById(req.params.id)
     .then(expense => {
-      if(expense.propId === req.params.propId) { 
         res.status(200).json(expense.serialize());
-      } else {
-        const message = 'Unauthorized';
-        console.error(message);
-        return res.status(401).send(message);
-      }
     })
     .catch(err => {
       res.status(500).json({ message: 'Internal server error: GET id' });
     })
 });
 
-// GET endpoint for searching through a property's expenses by category
-//example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/Repairs
-router.get('/:propId/search/:category', (req, res) => {
-  Expense
-    .find({propId: req.params.propId, category: req.params.category}) 
-    .then(expenses => {
-      res.json(expenses.map(expense => expense.serialize()));
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ message: 'Internal server error: GET' });
-    });
-});
+// // GET endpoint for searching through a property's expenses by category
+// //example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/Repairs
+// router.get('/:propId/search/:category', (req, res) => {
+//   Expense
+//     .find({propId: req.params.propId, category: req.params.category}) 
+//     .then(expenses => {
+//       res.json(expenses.map(expense => expense.serialize()));
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ message: 'Internal server error: GET' });
+//     });
+// });
 
 
-// GET endpoint for searching through a property's expenses by date range
-//example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'June 06 2018'/'June 30 2018'
-//or, localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'2018-05-06'/2018-05-30'
-router.get('/:propId/search/:fromDate/:endDate', (req, res) => {
-  Expense
-    .find({
-      propId: req.params.propId, 
-      date: {
-        $gte: req.params.fromDate,
-        $lt: req.params.endDate
-      }
-    }) 
-    .then(expenses => {
-      res.json(expenses.map(expense => expense.serialize()));
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ message: 'Internal server error: GET' });
-    });
-});
+// // GET endpoint for searching through a property's expenses by date range
+// //example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'June 06 2018'/'June 30 2018'
+// //or, localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'2018-05-06'/2018-05-30'
+// router.get('/:propId/search/:fromDate/:endDate', (req, res) => {
+//   Expense
+//     .find({
+//       propId: req.params.propId, 
+//       date: {
+//         $gte: req.params.fromDate,
+//         $lt: req.params.endDate
+//       }
+//     }) 
+//     .then(expenses => {
+//       res.json(expenses.map(expense => expense.serialize()));
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ message: 'Internal server error: GET' });
+//     });
+// });
+
 // add new expense to rental
-router.post('/:propId', jsonParser, (req, res) => {
+router.post('/', jsonParser, (req, res) => {
   const requiredFields = ['propName', 'category', 'amount', 'vendor', 'description', 'date'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -102,8 +97,7 @@ router.post('/:propId', jsonParser, (req, res) => {
     });
   }
 
-  let {user, propName, category, amount, vendor, description, date} = req.body;
-  let propId = req.params.propId;
+  let {user,propId, propName, category, amount, vendor, description, date} = req.body;
 
   Expense
   .create( {user, propId, propName, category, amount, vendor, description, date} )
@@ -117,7 +111,7 @@ router.post('/:propId', jsonParser, (req, res) => {
 });
 
 // update expense for a particular id
-router.put('/:propId/:id', jsonParser, (req, res) => {
+router.put('/:id', jsonParser, (req, res) => {
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     res.status(400).json({
@@ -135,15 +129,9 @@ router.put('/:propId/:id', jsonParser, (req, res) => {
   Expense
     .findById(req.params.id)
     .then(expense => {
-      if(expense.propId === req.params.propId) { 
-        Expense
-          .findByIdAndUpdate(req.params.id, { $set: updated })
-          .then(() => res.status(204).end())
-      } else {
-        const message = 'Unauthorized';
-        console.error(message);
-        return res.status(401).send(message);
-      }
+      Expense
+        .findByIdAndUpdate(req.params.id, { $set: updated })
+        .then(() => res.status(204).end())
     })
     .catch(err => {
       console.error(err);
@@ -152,31 +140,25 @@ router.put('/:propId/:id', jsonParser, (req, res) => {
 });
 
 // delete item by id and propId
-router.delete('/:propId/:id', jsonParser, (req, res) => {
+router.delete('/:id', jsonParser, (req, res) => {
 
   Expense
     .findById(req.params.id)
     .then(expense => {
-      if(expense.propId === req.params.propId) { 
-        Expense
-        .findByIdAndRemove(req.params.id)
-        .then(() => {
-          res.status(204).json({ message: 'success' });
-        })
-      } else {
-          const message = 'Unauthorized';
-          console.error(message);
-          return res.status(401).send(message);
-        }
+      Expense
+      .findByIdAndRemove(req.params.id)
+      .then(() => {
+        res.status(204).json({ message: 'success' });
       })
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error: DELETE' });
     });
 });
 
-// delete all expenses by propId
-router.delete('/:propId', jsonParser, (req, res) => {
+// delete all expenses for a property
+router.delete('/prop/:propId', jsonParser, (req, res) => {
   Expense
     .remove({propId: req.params.propId})
     .then(() => {
