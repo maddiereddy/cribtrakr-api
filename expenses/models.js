@@ -14,8 +14,7 @@ const expenseSchema = mongoose.Schema({
   amount:   {type: Currency, required: true},
   vendor:   {type: String, required: true},
   description:  {type: String, required: true},
-  date: {type: String, required: true},
-  imageURL: {type: [Buffer]}
+  date: {type: String, required: true}
 });
 
 expenseSchema.methods.serialize = function() {
@@ -28,8 +27,7 @@ expenseSchema.methods.serialize = function() {
     amount: "$" + (this.amount/100).toFixed(2),
     vendor: this.vendor,
     description: this.description,
-    date: moment(this.date).format("YYYY-MM-DD"),
-    imageURL: this.imageURL
+    date: moment(this.date).format("YYYY-MM-DD")
   };
 };
 

@@ -1,5 +1,11 @@
 'use strict';
 
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const fileType = require('file-type');
+const bluebird = require('bluebird');
+const multiparty = require('multiparty');
+
 const { Rental } = require('./models');
 const { Expense } = require('../expenses/models');
 const express = require('express');
@@ -8,8 +14,53 @@ const jsonParser = bodyParser.json();
 const passport = require('passport');
 const jwtAuth = passport.authenticate('jwt', {session: false});
 const router = express.Router();
-router.use(jwtAuth);
 
+
+// configure the keys for accessing AWS
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+});
+const bucket = process.env.AWS_S3_BUCKET;
+
+// configure AWS to work with promises
+AWS.config.setPromisesDependency(bluebird);
+
+// create S3 instance
+const s3 = new AWS.S3();
+
+// abstracts function to upload a file returning a promise
+const uploadFile = (buffer, name, type) => {
+  const params = {
+    ACL: 'public-read-write',
+    Body: buffer,
+    Bucket: bucket,
+    Key: `${name}`
+  };
+  return s3.upload(params).promise();
+};
+
+// Define POST route
+router.post('/upload', (request, response) => {
+  const form = new multiparty.Form();
+  form.parse(request, async (error, fields, files) => {
+    if (error) throw new Error(error);
+    try {
+      const path = files.file[0].path;
+      const buffer = fs.readFileSync(path);
+      const type = fileType(buffer);
+      const timestamp = Date.now().toString();
+      const fileName = `rentalsBucket/${fields.name}`;
+      const data = await uploadFile(buffer, fileName, type);
+      console.log(data);
+      return response.status(200).send(data.Location);
+    } catch (error) {
+      return response.status(400).send(error);
+    }
+  });
+});
+
+router.use(jwtAuth);
 // GET endpoint for a user's rental properties
 router.get('/', (req, res) => {
   Rental
