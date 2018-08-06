@@ -47,41 +47,6 @@ router.get('/:id', (req, res) => {
     })
 });
 
-// // GET endpoint for searching through a property's expenses by category
-// //example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/Repairs
-// router.get('/:propId/search/:category', (req, res) => {
-//   Expense
-//     .find({propId: req.params.propId, category: req.params.category}) 
-//     .then(expenses => {
-//       res.json(expenses.map(expense => expense.serialize()));
-//     })
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ message: 'Internal server error: GET' });
-//     });
-// });
-
-
-// // GET endpoint for searching through a property's expenses by date range
-// //example: localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'June 06 2018'/'June 30 2018'
-// //or, localhost:8080/api/expenses/5b4aca40fa58930aec9736fd/search/'2018-05-06'/2018-05-30'
-// router.get('/:propId/search/:fromDate/:endDate', (req, res) => {
-//   Expense
-//     .find({
-//       propId: req.params.propId, 
-//       date: {
-//         $gte: req.params.fromDate,
-//         $lt: req.params.endDate
-//       }
-//     }) 
-//     .then(expenses => {
-//       res.json(expenses.map(expense => expense.serialize()));
-//     })
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ message: 'Internal server error: GET' });
-//     });
-// });
 
 // add new expense to rental
 router.post('/', jsonParser, (req, res) => {

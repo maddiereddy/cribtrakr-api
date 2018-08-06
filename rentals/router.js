@@ -62,9 +62,9 @@ router.post('/upload', (request, response) => {
 
 router.use(jwtAuth);
 // GET endpoint for a user's rental properties
-router.get('/', (req, res) => {
+router.get('/user/:username', (req, res) => {
   Rental
-    .find({user: req.user.username}) 
+    .find({user: req.params.username}) 
     .then(rentals => {
       console.log(rentals);
       res.json(rentals.map(rental => rental.serialize()));
