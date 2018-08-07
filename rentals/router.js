@@ -52,7 +52,6 @@ router.post('/upload', (request, response) => {
       const timestamp = Date.now().toString();
       const fileName = `rentalsBucket/${fields.name}`;
       const data = await uploadFile(buffer, fileName, type);
-      console.log(data);
       return response.status(200).send(data.Location);
     } catch (error) {
       return response.status(400).send(error);
@@ -62,11 +61,10 @@ router.post('/upload', (request, response) => {
 
 router.use(jwtAuth);
 // GET endpoint for a user's rental properties
-router.get('/user/:username', (req, res) => {
+router.get('/', (req, res) => {
   Rental
-    .find({user: req.params.username}) 
+    .find({user: req.user.username}) 
     .then(rentals => {
-      console.log(rentals);
       res.json(rentals.map(rental => rental.serialize()));
     })
     .catch(err => {
@@ -79,13 +77,12 @@ router.get('/:id', (req, res) => {
   Rental
     .findById(req.params.id)
     .then(rental => {
-      if(rental.user === req.user.username) { 
+      // if(rental.user === req.user.username) { 
         res.status(200).json(rental.serialize());
-      } else {
-        const message = 'Unauthorized';
-        console.error(message);
-        return res.status(401).send(message);
-      }
+      // } else {
+      //   const message = 'Unauthorized';
+      //   return res.status(401).send(message);
+      // }
     })
     .catch(err => {
       res.status(500).json({ message: 'Internal server error: GET id' });
@@ -150,15 +147,14 @@ router.put('/:id', jsonParser, (req, res) => {
   Rental
     .findById(req.params.id)
     .then(rental => {
-      if(rental.user === req.user.username) { 
+      // if(rental.user === req.user.username) { 
         Rental
           .findByIdAndUpdate(req.params.id, { $set: updated })
           .then(() => res.status(204).end())
-      } else {
-        const message = 'Unauthorized';
-        console.error(message);
-        return res.status(401).send(message);
-      }
+      // } else {
+      //   const message = 'Unauthorized';
+      //   return res.status(401).send(message);
+      // }
     })
     .catch(err => {
       console.error(err);
