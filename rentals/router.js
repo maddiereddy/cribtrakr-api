@@ -64,9 +64,7 @@ router.use(jwtAuth);
 router.get('/', (req, res) => {
   Rental
     .find({user: req.user.username}) 
-    .then(rentals => {
-      res.json(rentals.map(rental => rental.serialize()));
-    })
+    .then(rentals => res.json(rentals.map(rental => rental.serialize())))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error: GET' });
@@ -76,14 +74,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   Rental
     .findById(req.params.id)
-    .then(rental => {
-      // if(rental.user === req.user.username) { 
-        res.status(200).json(rental.serialize());
-      // } else {
-      //   const message = 'Unauthorized';
-      //   return res.status(401).send(message);
-      // }
-    })
+    .then(rental => res.status(200).json(rental.serialize()))
     .catch(err => {
       res.status(500).json({ message: 'Internal server error: GET id' });
     })
@@ -147,14 +138,9 @@ router.put('/:id', jsonParser, (req, res) => {
   Rental
     .findById(req.params.id)
     .then(rental => {
-      // if(rental.user === req.user.username) { 
-        Rental
-          .findByIdAndUpdate(req.params.id, { $set: updated })
-          .then(() => res.status(204).end())
-      // } else {
-      //   const message = 'Unauthorized';
-      //   return res.status(401).send(message);
-      // }
+      Rental
+        .findByIdAndUpdate(req.params.id, { $set: updated })
+        .then(() => res.status(204).end())
     })
     .catch(err => {
       console.error(err);
