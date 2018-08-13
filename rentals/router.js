@@ -30,6 +30,16 @@ AWS.config.setPromisesDependency(bluebird);
 const s3 = new AWS.S3();
 
 // abstracts function to upload a file returning a promise
+const deleteFile = (name) => {
+  const params = {
+    ACL: 'public-read-write',
+    Bucket: bucket,
+    Key: `${name}`
+  };
+  return s3.delete(params).promise();
+};
+
+// abstracts function to upload a file returning a promise
 const uploadFile = (buffer, name, type) => {
   const params = {
     ACL: 'public-read-write',
@@ -152,19 +162,32 @@ router.put('/:id', jsonParser, (req, res) => {
 // In that way you can keep the expenses on it
 // delete item by id
 router.delete('/:id', jsonParser, (req, res) => {
+  deleteFile()
   Expense
     .remove({propId: req.params.id})
     .then(() => {
       Rental
-        .findByIdAndRemove(req.params.id)
+        .findById(req.params.id)
+        .then(rental => {
+          const fileName = rental.imageURL.substring('https://s3-us-west-1.amazonaws.com/cribtrakr/rentalsBucket/'.length);
+          deleteFile(fileName)
+        })
         .then(() => {
-          res.status(204).json({ message: 'success' });
+          Rental
+            .findByIdAndRemove(req.params.id)
+            .then(() => {
+              res.status(204).json({ message: 'success' });
+            })
+            .catch(err => {
+              console.error(err);
+              res.status(500).json({ message: 'Internal server error: DELETE rental property' });
+            })
         })
-        .catch(err => {
-          console.error(err);
-          res.status(500).json({ message: 'Internal server error: DELETE rental property' });
-        })
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error: DELETE image on s3' });
       })
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error: DELETE all expense on rental property' });
