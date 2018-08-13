@@ -32,11 +32,10 @@ const s3 = new AWS.S3();
 // abstracts function to upload a file returning a promise
 const deleteFile = (name) => {
   const params = {
-    ACL: 'public-read-write',
     Bucket: bucket,
-    Key: `${name}`
+    Key: `rentalsBucket/${name}`
   };
-  return s3.delete(params).promise();
+  return s3.deleteObject(params).promise();
 };
 
 // abstracts function to upload a file returning a promise
@@ -170,7 +169,7 @@ router.delete('/:id', jsonParser, (req, res) => {
         .findById(req.params.id)
         .then(rental => {
           const fileName = rental.imageURL.substring('https://s3-us-west-1.amazonaws.com/cribtrakr/rentalsBucket/'.length);
-          deleteFile(fileName)
+          deleteFile(fileName) //delete associated image from s3 for clean up
         })
         .then(() => {
           Rental
