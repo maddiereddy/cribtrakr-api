@@ -68,7 +68,9 @@ router.post('/upload', (request, response) => {
   });
 });
 
+// Add jwt authentication as middleware
 router.use(jwtAuth);
+
 // GET endpoint for a user's rental properties
 router.get('/', (req, res) => {
   Rental
@@ -80,6 +82,7 @@ router.get('/', (req, res) => {
     });
 });
 
+// GET endpoint for a rental property by id
 router.get('/:id', (req, res) => {
   Rental
     .findById(req.params.id)
@@ -89,7 +92,7 @@ router.get('/:id', (req, res) => {
     })
 });
 
-// add new item to list
+// Add new rental property to collection
 router.post('/', jsonParser, (req, res) => {
   const requiredFields = ['street', 'city', 'state', 'zip'];
   const missingField = requiredFields.find(field => !(field in req.body));
@@ -128,7 +131,7 @@ router.post('/', jsonParser, (req, res) => {
 
 });
 
-// update rental details by id
+// Update rental details by id
 router.put('/:id', jsonParser, (req, res) => {
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
@@ -157,9 +160,10 @@ router.put('/:id', jsonParser, (req, res) => {
     });
 });
 
-// Do we actually need to remove a property? Maybe just retire it if you sell it,
-// In that way you can keep the expenses on it
-// delete item by id
+// Delete rental property by id
+// First, delete all associated expense on the property
+// Then, delete the property image on S3
+// Lastly, delete the property document from the Rentals collection
 router.delete('/:id', jsonParser, (req, res) => {
   deleteFile()
   Expense
