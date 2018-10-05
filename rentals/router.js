@@ -165,15 +165,19 @@ router.put('/:id', jsonParser, (req, res) => {
 // Then, delete the property image on S3
 // Lastly, delete the property document from the Rentals collection
 router.delete('/:id', jsonParser, (req, res) => {
-  deleteFile()
+  // deleteFile()
   Expense
     .remove({propId: req.params.id})
     .then(() => {
       Rental
         .findById(req.params.id)
         .then(rental => {
-          const fileName = rental.imageURL.substring('https://s3-us-west-1.amazonaws.com/cribtrakr/rentalsBucket/'.length);
-          deleteFile(fileName) //delete associated image from s3 for clean up
+          if (rental.imageURL !== null) {
+
+            console.log("delete")
+            const fileName = rental.imageURL.substring('https://s3-us-west-1.amazonaws.com/cribtrakr/rentalsBucket/'.length);
+            deleteFile(fileName) //delete associated image from s3 for clean up
+          }
         })
         .then(() => {
           Rental
